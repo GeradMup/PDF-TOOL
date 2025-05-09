@@ -139,13 +139,15 @@
 
         <StackPanel x:Name="dropFilePanel" 
                     Grid.Row="1"
-                    Margin="50, 10, 40, 0"
+                    Margin="40, 2, 40, 2"
                     AllowDrop="True"
-                    Background="AliceBlue"
+                    Background="SkyBlue"
                     Drop="dropFilePanel_Drop">
 
-                    <Label HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
+            <Label HorizontalAlignment="Center"
+                           VerticalAlignment="Bottom"
+                           FontSize="20"
+                           Margin="12"
                            Content="Drop files here"/>
 
 

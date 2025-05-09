@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
+using Path = System.IO.Path;
+using System.Windows.Interop;
+using Microsoft.Win32;
+
 
 namespace PDF_Merger
 {
@@ -23,20 +30,17 @@ namespace PDF_Merger
     {
 
         ObservableCollection<String> documents;
+        List<DocObject> docObjects;
+        
         public MainWindow()
         {
             InitializeComponent();
 
             documents = new ObservableCollection<String>() 
             {
-                "Document 1",
-                "Document 2",
-                "Document 3",
-                "Document 4",
-                "Document 5",
-                "Document 6",
-                "Document 7"
             };
+
+            docObjects = new List<DocObject>();
 
             DocumentsList.ItemsSource = documents;
         }
@@ -147,6 +151,96 @@ namespace PDF_Merger
             {
                 throw;      
             }
+        }
+
+        private void dropFilePanel_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) 
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                string filePath  = files[0];
+
+                string fileName = Path.GetFileName(filePath);
+
+
+                //Check if the user has selected files with the correct extensions
+                string fileExtension = Path.GetExtension(files[0]);
+
+                if (fileExtension != ".pdf") return;
+
+                //Check if this file already exists in the collection on not before adding it
+                if (documents.Contains(fileName) == false) 
+                {
+                    documents.Add(fileName);
+
+                    docObjects.Add(new DocObject(fileName, filePath));    
+                }
+            }
+        }
+
+        private void DeleteDocument_Click(object sender, RoutedEventArgs e)
+        {
+            if (DocumentsList.SelectedItem == null) return;
+
+            string selectedItem = DocumentsList.SelectedItem.ToString();
+            documents.Remove(selectedItem);
+
+            docObjects.Remove(docObjects.Where(obj => obj.documentName == selectedItem).Single());
+        }
+
+        private void MergeButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                PdfDocument mergedDocs = new PdfDocument();
+
+                if (documents.Count() == 0) throw new Exception();
+
+                foreach (String docName in documents)
+                {
+                    string filePath = docObjects.First(obj => obj.documentName == docName).filePath;
+
+                    //Open each document that needs to be ended to the combined document at the end of the day
+                    PdfDocument inputDoc = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
+
+                    //Iterate through every single page in the doc
+                    int count = inputDoc.PageCount;
+                    for (int pageNumber = 0; pageNumber < count; pageNumber++)
+                    {
+                        PdfPage page = inputDoc.Pages[pageNumber];
+                        mergedDocs.Pages.Add(page);
+                    }
+                }
+
+                //Save the final merged document
+                string mergedDocumentPath = getFilePath();
+                mergedDocs.Save(mergedDocumentPath);
+
+                //Show that the process was completed
+                MessageBox.Show("Documents have been merged successfully!", "SUCCESS!", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            }
+            catch (Exception) 
+            {
+                MessageBox.Show("Failed to merge PDF files", "ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private string getFilePath() 
+        {
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.Filter = "Pdf Files|*.pdf";
+            fileDialog.Title = "Insert file name";
+
+            string fileName = "";
+            if (fileDialog.ShowDialog() == true) 
+            {
+                if (fileDialog.FileName.Trim() == "") throw new Exception("Failed!");
+
+                fileName = fileDialog.FileName;
+            }
+
+            return fileName;
         }
     }
 }

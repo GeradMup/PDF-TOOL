@@ -14,6 +14,8 @@
 *.userprefs
 *.csproj
 *Properties
+*.sln
+.sln
 
 # Mono auto generated files
 mono_crash.*

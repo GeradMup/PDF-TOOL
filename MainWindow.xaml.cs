@@ -19,6 +19,11 @@ using PdfSharp.Pdf.IO;
 using Path = System.IO.Path;
 using System.Windows.Interop;
 using Microsoft.Win32;
+using System.Diagnostics.Eventing.Reader;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Net.WebRequestMethods;
+using System.Runtime.Intrinsics.Arm;
+using PdfSharp.BigGustave;
 
 
 namespace PDF_Merger
@@ -29,20 +34,19 @@ namespace PDF_Merger
     public partial class MainWindow : Window
     {
 
-        ObservableCollection<String> documents;
-        List<DocObject> docObjects;
-        
+        readonly MainViewModel viewModel;
+
+
         public MainWindow()
         {
             InitializeComponent();
+            viewModel = new();
+            DataContext = viewModel;
+            //documents = [];
 
-            documents = new ObservableCollection<String>() 
-            {
-            };
+            //docObjects = [];
 
-            docObjects = new List<DocObject>();
-
-            DocumentsList.ItemsSource = documents;
+            //DocumentsList.ItemsSource = documents;
         }
 
         private void ListViewItem_Drop(object sender, DragEventArgs e)
@@ -55,8 +59,8 @@ namespace PDF_Merger
                 string targetItemString = targetItem.Content.ToString();
                 string sourceItemString = sourceItem.Content.ToString();
 
-                int targetItemIndex = documents.IndexOf(targetItemString);
-                int sourceItemIndex = documents.IndexOf(sourceItemString);
+                int targetItemIndex = viewModel.GetIndex(targetItemString);
+                int sourceItemIndex = viewModel.GetIndex(sourceItemString);
 
                 Rectangle topRectangle = (Rectangle)targetItem.Template.FindName("topRectangle", targetItem);
                 Rectangle bottomRectangle = (Rectangle)targetItem.Template.FindName("bottomRectangle", targetItem);
@@ -65,7 +69,7 @@ namespace PDF_Merger
                 bottomRectangle.Visibility = Visibility.Collapsed;
 
                 //Here we do the re-ordering
-                documents.Move(sourceItemIndex, targetItemIndex);
+                viewModel.ReOrder(sourceItemIndex, targetItemIndex);
             }
             catch(Exception) 
             {
@@ -116,8 +120,8 @@ namespace PDF_Merger
                 string targetItemString = targetItem.Content.ToString();
                 string sourceItemString = sourceItem.Content.ToString();
 
-                int targetItemIndex = documents.IndexOf(targetItemString);
-                int sourceItemIndex = documents.IndexOf(sourceItemString);
+                int targetItemIndex = viewModel.GetIndex(targetItemString);
+                int sourceItemIndex = viewModel.GetIndex(sourceItemString);
 
                 Rectangle topRectangle = (Rectangle)targetItem.Template.FindName("topRectangle", targetItem);
                 Rectangle bottomRectangle = (Rectangle)targetItem.Template.FindName("bottomRectangle", targetItem);
@@ -153,28 +157,36 @@ namespace PDF_Merger
             }
         }
 
-        private void dropFilePanel_Drop(object sender, DragEventArgs e)
+        private void DropFilePanel_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) 
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                string filePath  = files[0];
+                //string filePath = files[0];
 
-                string fileName = Path.GetFileName(filePath);
-
-
-                //Check if the user has selected files with the correct extensions
-                string fileExtension = Path.GetExtension(files[0]);
-
-                if (fileExtension != ".pdf") return;
-
-                //Check if this file already exists in the collection on not before adding it
-                if (documents.Contains(fileName) == false) 
+                foreach (string filePath in files) 
                 {
-                    documents.Add(fileName);
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-                    docObjects.Add(new DocObject(fileName, filePath));    
+
+                    //Check if the user has selected files with the correct extensions
+                    string fileExtension = Path.GetExtension(filePath);
+
+                    if(MainViewModel.ExtensionAllowed(fileExtension) == false) return;
+
+                    //Check if the file is a PDF file
+                    if (!fileExtension.Equals(".PDF", StringComparison.OrdinalIgnoreCase) && 
+                        !fileExtension.Equals(".XPS", StringComparison.OrdinalIgnoreCase) &&
+                        !fileExtension.Equals(".TEX", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBox.Show("Only PDF, XPS and TEX files are supported!", "ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    //Check if this file already exists in the collection on not before adding it
+                    viewModel.AddDocument(fileName, filePath);
                 }
+
             }
         }
 
@@ -183,64 +195,19 @@ namespace PDF_Merger
             if (DocumentsList.SelectedItem == null) return;
 
             string selectedItem = DocumentsList.SelectedItem.ToString();
-            documents.Remove(selectedItem);
-
-            docObjects.Remove(docObjects.Where(obj => obj.documentName == selectedItem).Single());
+            viewModel.RemoveDocument(selectedItem);
         }
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                PdfDocument mergedDocs = new PdfDocument();
-
-                if (documents.Count() == 0) throw new Exception();
-
-                foreach (String docName in documents)
-                {
-                    string filePath = docObjects.First(obj => obj.documentName == docName).filePath;
-
-                    //Open each document that needs to be ended to the combined document at the end of the day
-                    PdfDocument inputDoc = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
-
-                    //Iterate through every single page in the doc
-                    int count = inputDoc.PageCount;
-                    for (int pageNumber = 0; pageNumber < count; pageNumber++)
-                    {
-                        PdfPage page = inputDoc.Pages[pageNumber];
-                        mergedDocs.Pages.Add(page);
-                    }
-                }
-
-                //Save the final merged document
-                string mergedDocumentPath = getFilePath();
-                mergedDocs.Save(mergedDocumentPath);
-
-                //Show that the process was completed
-                MessageBox.Show("Documents have been merged successfully!", "SUCCESS!", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                viewModel.MergeFiles();
             }
-            catch (Exception) 
+            catch (Exception ex)
             {
-                MessageBox.Show("Failed to merge PDF files", "ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"An error occurred while merging files: {ex.Message}", "ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private string getFilePath() 
-        {
-            SaveFileDialog fileDialog = new SaveFileDialog();
-            fileDialog.Filter = "Pdf Files|*.pdf";
-            fileDialog.Title = "Insert file name";
-
-            string fileName = "";
-            if (fileDialog.ShowDialog() == true) 
-            {
-                if (fileDialog.FileName.Trim() == "") throw new Exception("Failed!");
-
-                fileName = fileDialog.FileName;
-            }
-
-            return fileName;
         }
     }
 }

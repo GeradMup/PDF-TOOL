@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace PDF_Merger
 {
-    public class DocObject
+    public class DocObject(string name, string path)
     {
-        public DocObject(string name, string path) 
-        {
-            documentName = name;
-            filePath = path;
-        }
-
-        public string documentName { get; set; }
-        public string filePath { get; set; }
+        public string DocumentName { get; set; } = name;
+        public string FilePath { get; set; } = path;
     }
 }

@@ -10,6 +10,9 @@ using GroupDocs.Conversion.Contracts;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf;
 using Microsoft.Win32;
+using System.IO;
+using GroupDocs.Conversion.Options.Convert;
+using GroupDocs.Conversion;
 
 namespace PDF_Merger
 {
@@ -21,7 +24,7 @@ namespace PDF_Merger
 
         readonly List<DocObject> DocObjects = [];
 
-
+        readonly List<string> TempFilePaths = [];
 
         public int GetIndex(string fileName)
         {
@@ -35,12 +38,31 @@ namespace PDF_Merger
 
         public void AddDocument(string fileName, string filePath)
         {
+            string fileExtension = Path.GetExtension(filePath);
+
+
+            //Check if the input file is an image
+            //Check if the input file is an image
+            string[] imageExtensions = [".BMP", ".JPEG", ".JPG", ".PNG", ".GIF", ".TIFF", ".SVG"];
+            bool isImageFile = imageExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+
+
+            if (isImageFile) 
+            {
+                filePath = ConvertToPDF.ConvertImageToPdf(filePath);
+            }
+
+
+
+
             if (!Documents.Contains(fileName))
             {
                 Documents.Add(fileName);
                 DocObjects.Add(new DocObject(fileName, filePath));
             }
         }
+
+
 
         public void RemoveDocument(string fileName)
         {

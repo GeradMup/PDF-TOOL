@@ -174,15 +174,6 @@ namespace PDF_Merger
 
                     if(MainViewModel.ExtensionAllowed(fileExtension) == false) return;
 
-                    //Check if the file is a PDF file
-                    if (!fileExtension.Equals(".PDF", StringComparison.OrdinalIgnoreCase) && 
-                        !fileExtension.Equals(".XPS", StringComparison.OrdinalIgnoreCase) &&
-                        !fileExtension.Equals(".TEX", StringComparison.OrdinalIgnoreCase))
-                    {
-                        MessageBox.Show("Only PDF, XPS and TEX files are supported!", "ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
                     //Check if this file already exists in the collection on not before adding it
                     viewModel.AddDocument(fileName, filePath);
                 }

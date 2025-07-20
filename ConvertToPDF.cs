@@ -9,6 +9,8 @@ using System.Runtime.Versioning;
 using Syncfusion.DocIO.DLS;
 using Syncfusion.DocIO;
 using Syncfusion.DocIORenderer;
+using Syncfusion.Presentation;
+using Syncfusion.PresentationRenderer;
 
 namespace PDF_Merger
 {
@@ -55,12 +57,8 @@ namespace PDF_Merger
             PdfBitmap pdfImage = new(ms);
             graphics.DrawImage(pdfImage, x, y, drawWidth, drawHeight);
 
-            // Save the document
-            string tempOutputDir = Path.Combine(Path.GetTempPath(), "Actom PDF Merger");
-            Directory.CreateDirectory(tempOutputDir);
-
             string imageName = Path.GetFileNameWithoutExtension(imagePath);
-            string tempOutfile = Path.Combine(tempOutputDir, imageName + ".pdf");
+            string tempOutfile = Path.Combine(TempDir(), imageName + ".pdf");
 
             document.Save(tempOutfile);
 
@@ -71,21 +69,36 @@ namespace PDF_Merger
             return tempOutfile;
         }
 
+        internal static string ConvertPowerPointToPdf(string filePath)
+        {
+            // Open the PowerPoint presentation
+            using IPresentation presentation = Presentation.Open(filePath);
+            // Assign PresentationRenderer to enable PDF conversion
+            presentation.PresentationRenderer = new PresentationRenderer();
+
+            // Convert the presentation to PDF
+            using PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
+            // Save the PDF document
+
+            string pptFileName = Path.GetFileNameWithoutExtension(filePath);
+            string tempOutfile = Path.Combine(TempDir(), pptFileName + ".pdf");
+
+            pdfDocument.Save(tempOutfile);
+            return tempOutfile;
+        }
+
         internal static string ConvertWordToPdf(string filePath)
         {
             // Open the Word document
-            using WordDocument wordDocument = new(filePath, FormatType.Automatic);
+            using WordDocument wordDocument = new(filePath, Syncfusion.DocIO.FormatType.Automatic);
             // Initialize the DocIORenderer for Word-to-PDF conversion
             using DocIORenderer renderer = new();
             // Convert the Word document to PDF
             PdfDocument pdfDocument = renderer.ConvertToPDF(wordDocument);
 
-            // Save the document
-            string tempOutputDir = Path.Combine(Path.GetTempPath(), "Actom PDF Merger");
-            Directory.CreateDirectory(tempOutputDir);
 
             string docName = Path.GetFileNameWithoutExtension(filePath);
-            string tempOutfile = Path.Combine(tempOutputDir, docName + ".pdf");
+            string tempOutfile = Path.Combine(TempDir(), docName + ".pdf");
 
             // Save the converted PDF to file
             pdfDocument.Save(tempOutfile);
@@ -93,6 +106,15 @@ namespace PDF_Merger
             // Close the PDF document
             pdfDocument.Close(true);
             return tempOutfile;
+        }
+
+        private static string TempDir() 
+        {
+
+            // Save the document
+            string tempOutputDir = Path.Combine(Path.GetTempPath(), "Actom PDF Merger");
+            Directory.CreateDirectory(tempOutputDir);
+            return tempOutputDir;
         }
     }
 }

@@ -51,14 +51,24 @@ namespace PDF_Merger
             string[] wordExtensions = [".DOC", ".DOCX", ".DOCM", ".DOT", ".DOTX", ".DOTM", ".RTF", ".TXT"];
             bool isWordFile = wordExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
 
+            //Check for powerpoint documents and convert them to PDF
+            string[] pptExtensions = [".PPT", ".PPTX", ".PPS", ".PPSX", ".ODP", ".OTP"];
+            bool isPptFile = pptExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+
 
             if (isImageFile) 
             {                
                 filePath = ConvertToPDF.ConvertImageToPdf(filePath);
-            }else if (isWordFile)
+            }
+            else if (isWordFile)
             {
                 // Convert Word document to PDF
                 filePath = ConvertToPDF.ConvertWordToPdf(filePath);
+            }
+            else if (isPptFile)
+            {
+                // Convert PowerPoint document to PDF
+                filePath = ConvertToPDF.ConvertPowerPointToPdf(filePath);
             }
 
             if (!Documents.Contains(fileName))

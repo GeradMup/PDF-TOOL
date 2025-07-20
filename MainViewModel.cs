@@ -55,6 +55,10 @@ namespace PDF_Merger
             string[] pptExtensions = [".PPT", ".PPTX", ".PPS", ".PPSX", ".ODP", ".OTP"];
             bool isPptFile = pptExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
 
+            //Check for excel documents and convert them to PDF
+            string[] excelExtensions = [".XLS", ".XLSX", ".XLSM", ".XLSB", ".CSV"];
+            bool isExcelFile = excelExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+
 
             if (isImageFile) 
             {                
@@ -69,6 +73,11 @@ namespace PDF_Merger
             {
                 // Convert PowerPoint document to PDF
                 filePath = ConvertToPDF.ConvertPowerPointToPdf(filePath);
+            }
+            else if (isExcelFile)
+            {
+                // Convert Excel document to PDF
+                filePath = ConvertToPDF.ConvertExcelToPdf(filePath);
             }
 
             if (!Documents.Contains(fileName))

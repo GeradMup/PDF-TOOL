@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using GroupDocs.Conversion.Contracts;
-using PdfSharp.Pdf.IO;
-using PdfSharp.Pdf;
 using Microsoft.Win32;
 using System.IO;
-using GroupDocs.Conversion.Options.Convert;
-using GroupDocs.Conversion;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Parsing;
+using System.Runtime.Versioning;
+using Syncfusion.Pdf.Interactive;
+using Syncfusion.Drawing;
 
 namespace PDF_Merger
 {
@@ -36,6 +36,7 @@ namespace PDF_Merger
             Documents.Move(sourceItemIndex, targetItemIndex);
         }
 
+        [SupportedOSPlatform("windows6.1")]
         public void AddDocument(string fileName, string filePath)
         {
             string fileExtension = Path.GetExtension(filePath);
@@ -46,14 +47,19 @@ namespace PDF_Merger
             string[] imageExtensions = [".BMP", ".JPEG", ".JPG", ".PNG", ".GIF", ".TIFF", ".SVG"];
             bool isImageFile = imageExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
 
+            //Check for word documents and convert them to PDF
+            string[] wordExtensions = [".DOC", ".DOCX", ".DOCM", ".DOT", ".DOTX", ".DOTM", ".RTF", ".TXT"];
+            bool isWordFile = wordExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+
 
             if (isImageFile) 
-            {
+            {                
                 filePath = ConvertToPDF.ConvertImageToPdf(filePath);
+            }else if (isWordFile)
+            {
+                // Convert Word document to PDF
+                filePath = ConvertToPDF.ConvertWordToPdf(filePath);
             }
-
-
-
 
             if (!Documents.Contains(fileName))
             {
@@ -81,34 +87,29 @@ namespace PDF_Merger
 
                 if (Documents.Count == 0) throw new Exception();
 
-                int globalPageNumber = 0;
-
+                int currentPageIndex = 0;
                 foreach (String docName in Documents)
                 {
                     string filePath = DocObjects.First(obj => obj.DocumentName == docName).FilePath;
+                    PdfLoadedDocument loadedDoc = new(filePath);
 
-                    bool indexAdded = false;
-                    //Open each document that needs to be ended to the combined document at the end of the day
-                    PdfDocument inputDoc = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
+                    // Import pages
+                    mergedDocs.ImportPageRange(loadedDoc, 0, loadedDoc.PageCount - 1);
 
-                    //Iterate through every single page in the doc
-                    int count = inputDoc.PageCount;
-                    for (int pageNumber = 0; pageNumber < count; pageNumber++)
+                    // Add a bookmark to the first page of this document
+                    PdfBookmark bookmark = mergedDocs.Bookmarks.Add(System.IO.Path.GetFileName(filePath));
+                    bookmark.Destination = new PdfDestination(mergedDocs.Pages[currentPageIndex])
                     {
-                        PdfPage page = inputDoc.Pages[pageNumber];
-                        mergedDocs.Pages.Add(page);
-                        if (indexAdded == false)
-                        {
-                            mergedDocs.Outlines.Add(docName, mergedDocs.Pages[globalPageNumber]);
-                            indexAdded = true;
-                        }
-                        globalPageNumber++;
-                    }
+                        Location = new PointF(0, 0)
+                    };
+
+                    currentPageIndex += loadedDoc.PageCount;
                 }
 
                 //Save the final merged document
                 string mergedDocumentPath = GetFilePath();
                 mergedDocs.Save(mergedDocumentPath);
+                mergedDocs.Close();
 
                 //Show that the process was completed
                 MessageBox.Show("Documents have been merged successfully!", "SUCCESS!", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -147,7 +148,7 @@ namespace PDF_Merger
                ".DOC", ".DOCX", ".DOCM", ".DOT", ".DOTX", ".DOTM", ".RTF", ".TXT",
                ".PPT", ".PPTX", ".PPS", ".PPSX", ".ODP", ".OTP",
                ".XLS", ".XLSX", ".XLSM", ".XLSB", ".XLSX", ".CSV",
-               ".BMP", ".JPEG", ".PNG", ".GIF", ".TIFF", ".SVG", ".PS"
+               ".BMP", ".JPEG", ".JPG", ".PNG", ".GIF", ".TIFF", ".SVG", ".PS"
            };
 
             // Use LINQ's Any method with StringComparison.OrdinalIgnoreCase for case-insensitive comparison  

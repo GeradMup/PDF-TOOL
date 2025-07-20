@@ -1,29 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
 using Path = System.IO.Path;
-using System.Windows.Interop;
-using Microsoft.Win32;
-using System.Diagnostics.Eventing.Reader;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Net.WebRequestMethods;
-using System.Runtime.Intrinsics.Arm;
-using PdfSharp.BigGustave;
+using Syncfusion.Licensing;
+
+
 
 
 namespace PDF_Merger
@@ -39,6 +23,8 @@ namespace PDF_Merger
 
         public MainWindow()
         {
+            SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JEaF5cXmRCeUx0Qnxbf1x1ZFBMYVhbQHFPIiBoS35Rc0VkW39fd3VRQmddUU11VEFd");
+
             InitializeComponent();
             viewModel = new();
             DataContext = viewModel;
@@ -157,6 +143,7 @@ namespace PDF_Merger
             }
         }
 
+        [SupportedOSPlatform("windows6.1")]
         private void DropFilePanel_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))

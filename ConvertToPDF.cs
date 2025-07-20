@@ -2,100 +2,96 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
+using System.Drawing;
+using System.Runtime.Versioning;
+using Syncfusion.DocIO.DLS;
+using Syncfusion.DocIO;
+using Syncfusion.DocIORenderer;
 
 namespace PDF_Merger
 {
     internal class ConvertToPDF
     {
-        public static List<string> tempFiles = new List<string>();
-
-        public static string Convert(string inputFilePath)
-        {
-            string sofficePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "soffice.exe");
-
-            if (!File.Exists(sofficePath))
-                throw new FileNotFoundException("LibreOffice executable not found at expected location.", sofficePath);
-
-            if (!File.Exists(inputFilePath))
-                throw new FileNotFoundException("Input file does not exist.", inputFilePath);
-
-            string tempOutputDir = Path.Combine(Path.GetTempPath(), "MyAppPdfTemp");
-            Directory.CreateDirectory(tempOutputDir);
-
-            var process = new Process();
-            process.StartInfo.FileName = sofficePath;
-            process.StartInfo.Arguments = $"--headless --convert-to pdf \"{inputFilePath}\" --outdir \"{tempOutputDir}\"";
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-
-            process.Start();
-            string stdout = process.StandardOutput.ReadToEnd();
-            string stderr = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0)
-                throw new Exception($"LibreOffice conversion failed:\n{stderr}");
-
-            string outputPdf = Path.Combine(tempOutputDir, Path.GetFileNameWithoutExtension(inputFilePath) + ".pdf");
-
-            if (!File.Exists(outputPdf))
-                throw new FileNotFoundException("Expected PDF output was not created.", outputPdf);
-
-            tempFiles.Add(outputPdf);
-            return outputPdf;
-        }
-
+        [SupportedOSPlatform("windows6.1")]
         public static string ConvertImageToPdf(string imagePath)
         {
-            using var document = new PdfDocument();
-            var page = document.AddPage();
-            page.Size = PdfSharp.PageSize.A4;
+            PdfDocument document = new();
+            PdfPage page = document.Pages.Add();
+            // Use fully qualified name for System.Drawing.Image
+            System.Drawing.Image image = System.Drawing.Image.FromFile(imagePath);
 
-            using var gfx = XGraphics.FromPdfPage(page);
-            using var img = XImage.FromFile(imagePath);
+            // Get page size in points (1 point = 1/72 inch)
+            Syncfusion.Drawing.SizeF pageSize = page.GetClientSize(); // Updated to use Syncfusion.Drawing.SizeF
 
-            // Convert image pixel size to points (72 DPI)
-            double imgWidthPoints = img.PixelWidth * 72 / img.HorizontalResolution;
-            double imgHeightPoints = img.PixelHeight * 72 / img.VerticalResolution;
+            // Convert image size from pixels to points (assuming 96 DPI)
+            float imageWidthPoints = image.Width * 72f / image.HorizontalResolution;
+            float imageHeightPoints = image.Height * 72f / image.VerticalResolution;
 
-            double maxWidth = page.Width.Point;
-            double maxHeight = page.Height.Point;
+            float scale = 1.0f;
 
-            double finalWidth = imgWidthPoints;
-            double finalHeight = imgHeightPoints;
-
-            // Scale down if necessary (but never scale up)
-            if (imgWidthPoints > maxWidth || imgHeightPoints > maxHeight)
+            // Check if scaling is needed
+            if (imageWidthPoints > pageSize.Width || imageHeightPoints > pageSize.Height)
             {
-                double widthScale = maxWidth / imgWidthPoints;
-                double heightScale = maxHeight / imgHeightPoints;
-                double scale = Math.Min(widthScale, heightScale);
-
-                finalWidth = imgWidthPoints * scale;
-                finalHeight = imgHeightPoints * scale;
+                float widthScale = pageSize.Width / imageWidthPoints;
+                float heightScale = pageSize.Height / imageHeightPoints;
+                scale = Math.Min(widthScale, heightScale);
             }
 
+            float drawWidth = imageWidthPoints * scale;
+            float drawHeight = imageHeightPoints * scale;
+
             // Center the image on the page
-            double x = (page.Width.Point - finalWidth) / 2;
-            double y = (page.Height.Point - finalHeight) / 2;
+            float x = (pageSize.Width - drawWidth) / 2;
+            float y = (pageSize.Height - drawHeight) / 2;
 
-            gfx.DrawImage(img, x, y, finalWidth, finalHeight);
+            PdfGraphics graphics = page.Graphics;
 
-            string tempOutputDir = Path.Combine(Path.GetTempPath(), "ActomPDF");
+            MemoryStream ms = new();
+            image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            ms.Position = 0;
+
+            PdfBitmap pdfImage = new(ms);
+            graphics.DrawImage(pdfImage, x, y, drawWidth, drawHeight);
+
+            // Save the document
+            string tempOutputDir = Path.Combine(Path.GetTempPath(), "Actom PDF Merger");
             Directory.CreateDirectory(tempOutputDir);
 
             string imageName = Path.GetFileNameWithoutExtension(imagePath);
             string tempOutfile = Path.Combine(tempOutputDir, imageName + ".pdf");
 
             document.Save(tempOutfile);
-            document.Close();
+
+            // Dispose objects
+            image.Dispose();
+            document.Close(true);
+
+            return tempOutfile;
+        }
+
+        internal static string ConvertWordToPdf(string filePath)
+        {
+            // Open the Word document
+            using WordDocument wordDocument = new(filePath, FormatType.Automatic);
+            // Initialize the DocIORenderer for Word-to-PDF conversion
+            using DocIORenderer renderer = new();
+            // Convert the Word document to PDF
+            PdfDocument pdfDocument = renderer.ConvertToPDF(wordDocument);
+
+            // Save the document
+            string tempOutputDir = Path.Combine(Path.GetTempPath(), "Actom PDF Merger");
+            Directory.CreateDirectory(tempOutputDir);
+
+            string docName = Path.GetFileNameWithoutExtension(filePath);
+            string tempOutfile = Path.Combine(tempOutputDir, docName + ".pdf");
+
+            // Save the converted PDF to file
+            pdfDocument.Save(tempOutfile);
+
+            // Close the PDF document
+            pdfDocument.Close(true);
             return tempOutfile;
         }
     }

@@ -5,9 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
-using Syncfusion.Licensing;
-
-
 
 
 namespace PDF_Merger
@@ -23,7 +20,7 @@ namespace PDF_Merger
 
         public MainWindow()
         {
-            SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JEaF5cXmRCeUx0Qnxbf1x1ZFBMYVhbQHFPIiBoS35Rc0VkW39fd3VRQmddUU11VEFd");
+           
 
             InitializeComponent();
             viewModel = new();

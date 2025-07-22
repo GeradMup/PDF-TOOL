@@ -1,35 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Versioning;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PDF_Merger.ViewModels;
+using System.IO;
 using Path = System.IO.Path;
 
-
-namespace PDF_Merger
+namespace PDF_Merger.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MergePage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MergePage : Page
     {
 
-        readonly MainViewModel viewModel;
-
-
-        public MainWindow()
+        private readonly MergeViewModel viewModel = new();
+        public MergePage()
         {
-           
-
             InitializeComponent();
-            viewModel = new();
             DataContext = viewModel;
-            //documents = [];
-
-            //docObjects = [];
-
-            //DocumentsList.ItemsSource = documents;
         }
 
         private void ListViewItem_Drop(object sender, DragEventArgs e)
@@ -54,7 +54,7 @@ namespace PDF_Merger
                 //Here we do the re-ordering
                 viewModel.ReOrder(sourceItemIndex, targetItemIndex);
             }
-            catch(Exception) 
+            catch (Exception)
             {
                 throw;
             }
@@ -113,7 +113,7 @@ namespace PDF_Merger
                 {
                     topRectangle.Visibility = Visibility.Visible;
                 }
-                else if (targetItemIndex > sourceItemIndex) 
+                else if (targetItemIndex > sourceItemIndex)
                 {
                     bottomRectangle.Visibility = Visibility.Visible;
                 }
@@ -128,7 +128,7 @@ namespace PDF_Merger
         {
             try
             {
-                if(e.LeftButton == MouseButtonState.Pressed) 
+                if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     ListViewItem sourceItem = (ListViewItem)sender;
                     DragDrop.DoDragDrop(DocumentsList, sourceItem, DragDropEffects.Move);
@@ -136,7 +136,7 @@ namespace PDF_Merger
             }
             catch (Exception)
             {
-                throw;      
+                throw;
             }
         }
 
@@ -148,7 +148,7 @@ namespace PDF_Merger
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 //string filePath = files[0];
 
-                foreach (string filePath in files) 
+                foreach (string filePath in files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(filePath);
 
@@ -156,7 +156,7 @@ namespace PDF_Merger
                     //Check if the user has selected files with the correct extensions
                     string fileExtension = Path.GetExtension(filePath);
 
-                    if(MainViewModel.ExtensionAllowed(fileExtension) == false) return;
+                    if (MergeViewModel.ExtensionAllowed(fileExtension) == false) return;
 
                     //Check if this file already exists in the collection on not before adding it
                     viewModel.AddDocument(fileName, filePath);

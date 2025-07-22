@@ -14,7 +14,7 @@ using Syncfusion.PresentationRenderer;
 using Syncfusion.XlsIO;
 using Syncfusion.XlsIORenderer;
 
-namespace PDF_Merger
+namespace PDF_Merger.Services
 {
     internal class ConvertToPDF
     {
@@ -25,7 +25,7 @@ namespace PDF_Merger
             PdfDocument document = new();
             PdfPage page = document.Pages.Add();
             // Use fully qualified name for System.Drawing.Image  
-            System.Drawing.Image image = System.Drawing.Image.FromFile(imagePath);
+            Image image = Image.FromFile(imagePath);
 
             // Get page size in points (1 point = 1/72 inch)  
             Syncfusion.Drawing.SizeF pageSize = page.GetClientSize(); // Updated to use Syncfusion.Drawing.SizeF  
@@ -126,7 +126,7 @@ namespace PDF_Merger
             presentation.PresentationRenderer = new PresentationRenderer();
 
             // Convert the presentation to PDF  
-            using Syncfusion.Pdf.PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
+            using PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
             // Save the PDF document  
 
             string pptFileName = Path.GetFileNameWithoutExtension(filePath);
@@ -143,7 +143,7 @@ namespace PDF_Merger
             // Initialize the DocIORenderer for Word-to-PDF conversion  
             using DocIORenderer renderer = new();
             // Convert the Word document to PDF  
-            Syncfusion.Pdf.PdfDocument pdfDocument = renderer.ConvertToPDF(wordDocument);
+            PdfDocument pdfDocument = renderer.ConvertToPDF(wordDocument);
 
             string docName = Path.GetFileNameWithoutExtension(filePath);
             string tempOutfile = Path.Combine(TempDir(), docName + ".pdf");

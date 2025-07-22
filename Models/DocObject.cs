@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PDF_Merger
+namespace PDF_Merger.Models
 {
     public class DocObject(string name, string path)
     {

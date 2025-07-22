@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Win32;
-using System.IO;
-using Syncfusion.Pdf;
-using Syncfusion.Pdf.Parsing;
-using System.Runtime.Versioning;
 using Syncfusion.Pdf.Interactive;
+using Syncfusion.Pdf.Parsing;
+using Syncfusion.Pdf;
+using System.Windows;
+using System.IO;
 using Syncfusion.Drawing;
+using PDF_Merger.Models;
+using PDF_Merger.Services;
 
-namespace PDF_Merger
+namespace PDF_Merger.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MergeViewModel : ObservableObject
     {
-
         [ObservableProperty]
         public ObservableCollection<string> documents = [];
 
@@ -60,8 +61,8 @@ namespace PDF_Merger
             bool isExcelFile = excelExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
 
 
-            if (isImageFile) 
-            {                
+            if (isImageFile)
+            {
                 filePath = ConvertToPDF.ConvertImageToPdf(filePath);
             }
             else if (isWordFile)

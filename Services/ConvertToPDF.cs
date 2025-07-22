@@ -7,11 +7,12 @@ using Syncfusion.Pdf.Graphics;
 using System.Drawing;
 using System.Runtime.Versioning;
 using Syncfusion.XlsIO;
-using Syncfusion.XlsIORenderer;
 using Syncfusion.Presentation;
-using Syncfusion.PresentationRenderer;
 using Syncfusion.DocIO.DLS;
-using Syncfusion.DocIORenderer;
+using Syncfusion.ExcelToPdfConverter;
+using Syncfusion.OfficeChartToImageConverter;
+using Syncfusion.PresentationToPdfConverter;
+using Syncfusion.DocToPDFConverter;
 
 namespace PDF_Merger.Services
 {
@@ -27,7 +28,7 @@ namespace PDF_Merger.Services
             Image image = Image.FromFile(imagePath);
 
             // Get page size in points (1 point = 1/72 inch)  
-            Syncfusion.Drawing.SizeF pageSize = page.GetClientSize(); // Updated to use Syncfusion.Drawing.SizeF  
+            SizeF pageSize = page.GetClientSize(); // Updated to use Syncfusion.Drawing.SizeF  
 
             // Convert image size from pixels to points (assuming 96 DPI)  
             float imageWidthPoints = image.Width * 72f / image.HorizontalResolution;
@@ -99,17 +100,22 @@ namespace PDF_Merger.Services
                 sheet.PageSetup.RightFooter = string.Empty;
             }
 
-            //Initialize XlsIO renderer
-            XlsIORenderer renderer = new();
+
+            ExcelToPdfConverter converter = new(workbook);
             // Set converter settings
-            XlsIORendererSettings settings = new()
+            var settings = new ExcelToPdfConverterSettings
             {
-                LayoutOptions = LayoutOptions.FitAllColumnsOnOnePage
+                LayoutOptions = LayoutOptions.FitAllColumnsOnOnePage,
+                EmbedFonts = true, // Embed fonts in the PDF
+                ExportQualityImage = true,
+                
+                // Set the page size to A4
+                // Optional: DisplayGridLines = GridLinesDisplayStyle.Visible
             };
 
 
             //Convert Excel document into PDF document 
-            PdfDocument pdfDocument = renderer.ConvertToPDF(workbook, settings);
+            PdfDocument pdfDocument = converter.Convert(settings);
 
             string excelFileName = Path.GetFileNameWithoutExtension(filePath);
             string tempOutfile = Path.Combine(TempDir(), excelFileName + ".pdf");
@@ -122,10 +128,20 @@ namespace PDF_Merger.Services
             // Open the PowerPoint presentation  
             using IPresentation presentation = Presentation.Open(filePath);
             // Assign PresentationRenderer to enable PDF conversion  
-            presentation.PresentationRenderer = new PresentationRenderer();
+            presentation.ChartToImageConverter = new ChartToImageConverter();
+
+            PresentationToPdfConverterSettings settings = new()
+            {
+                ImageResolution = 300, // High resolution
+                ImageQuality = 100, // Max quality
+                EmbedFonts = true, // Embed fonts in the PDF
+                EmbedCompleteFonts = true, // Embed complete fonts
+                OptimizeIdenticalImages = true, // Optimize identical images
+                AutoTag = true // Enable accessibility features
+            };
 
             // Convert the presentation to PDF  
-            using PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
+            using PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation, settings);
             // Save the PDF document  
 
             string pptFileName = Path.GetFileNameWithoutExtension(filePath);
@@ -140,9 +156,18 @@ namespace PDF_Merger.Services
             // Open the Word document  
             using WordDocument wordDocument = new(filePath, Syncfusion.DocIO.FormatType.Automatic);
             // Initialize the DocIORenderer for Word-to-PDF conversion  
-            using DocIORenderer renderer = new();
-            // Convert the Word document to PDF  
-            PdfDocument pdfDocument = renderer.ConvertToPDF(wordDocument);
+            
+            wordDocument.ChartToImageConverter = new ChartToImageConverter(); // Set the ChartToImageConverter for rendering charts
+
+            using DocToPDFConverter converter = new();
+            converter.Settings.EmbedFonts = true;
+            converter.Settings.ImageQuality = 100;
+            converter.Settings.ImageResolution = 300; // DPI
+            converter.Settings.OptimizeIdenticalImages = true; // Optimize identical images
+            converter.Settings.AutoTag = true; // for accessibility
+
+            // 4. Convert to PDF
+            using PdfDocument pdfDocument = converter.ConvertToPDF(wordDocument);
 
             string docName = Path.GetFileNameWithoutExtension(filePath);
             string tempOutfile = Path.Combine(TempDir(), docName + ".pdf");
@@ -157,7 +182,6 @@ namespace PDF_Merger.Services
 
         private static string TempDir()
         {
-
             // Save the document  
             string tempOutputDir = Path.Combine(Path.GetTempPath(), "Actom PDF Merger");
             Directory.CreateDirectory(tempOutputDir);

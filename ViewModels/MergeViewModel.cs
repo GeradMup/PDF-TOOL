@@ -15,6 +15,7 @@ using System.IO;
 using Syncfusion.Drawing;
 using PDF_Merger.Models;
 using PDF_Merger.Services;
+using System.Drawing;
 
 namespace PDF_Merger.ViewModels
 {
@@ -114,7 +115,7 @@ namespace PDF_Merger.ViewModels
                     PdfLoadedDocument loadedDoc = new(filePath);
 
                     // Import pages
-                    mergedDocs.ImportPageRange(loadedDoc, 0, loadedDoc.PageCount - 1);
+                    mergedDocs.ImportPageRange(loadedDoc, 0, loadedDoc.Pages.Count - 1);
 
                     // Add a bookmark to the first page of this document
                     PdfBookmark bookmark = mergedDocs.Bookmarks.Add(System.IO.Path.GetFileName(filePath));
@@ -123,8 +124,12 @@ namespace PDF_Merger.ViewModels
                         Location = new PointF(0, 0)
                     };
 
-                    currentPageIndex += loadedDoc.PageCount;
+                    currentPageIndex += loadedDoc.Pages.Count;
                 }
+
+                //Avoid compression to maximize quality
+                mergedDocs.Compression = PdfCompressionLevel.None;
+                
 
                 //Save the final merged document
                 string mergedDocumentPath = GetFilePath();

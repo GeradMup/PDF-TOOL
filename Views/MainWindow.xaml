@@ -11,6 +11,7 @@
         MinHeight="700" MinWidth="800"
         Height="700" Width="800"
         WindowState="Maximized"
+        Background="White"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
 
     <Grid>

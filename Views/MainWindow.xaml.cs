@@ -21,11 +21,24 @@ namespace PDF_Merger
 
         private readonly MergePage mergePage = new();
         private readonly PDFViewer pdfViewer = new();
+
+
+
         public MainWindow()
         {
             InitializeComponent();
             viewModel = new();
             DataContext = viewModel;
+            MainFrame.Navigate(pdfViewer);
+        }
+
+        private void Pdfpage_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(pdfViewer);
+        }
+
+        private void PdfMerge_Click(object sender, RoutedEventArgs e)
+        {
             MainFrame.Navigate(mergePage);
         }
     }

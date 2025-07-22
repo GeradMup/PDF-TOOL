@@ -7,15 +7,78 @@
         mc:Ignorable="d"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
-        Title="Actom PDF Merger v0.1 (Developer: Gerad Mupfumisi)"
+        Title="Actom PDF Tool v0.1 (Developer: Gerad Mupfumisi)"
         MinHeight="700" MinWidth="800"
         Height="700" Width="800"
         WindowState="Maximized"
         Background="White"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
 
+    <Window.Resources>
+        <SolidColorBrush x:Key="ActomBlue" Color="#0096FF" />
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Cursor" Value="Arrow" />
+            <Setter Property="Background" Value="LightGray" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="75"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                        CornerRadius="10"
+                        Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource ActomBlue}" />
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="LightGreen" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="Gray" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    
     <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button x:Name="Pdfpage" 
+                    Content="Viewer" 
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Click="Pdfpage_Click"/>
+
+            <Button x:Name="PdfMerge" 
+                    Content="Merger" 
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Click="PdfMerge_Click"/>
+
+        </StackPanel>
+        
+        
+        
         <Frame x:Name="MainFrame" 
+               Grid.Row="1"
                NavigationUIVisibility="Hidden"
                Background="White"
                HorizontalAlignment="Stretch"

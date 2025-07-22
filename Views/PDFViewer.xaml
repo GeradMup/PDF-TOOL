@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:PDF_Merger.Views"
+      xmlns:PdfViewer="clr-namespace:Syncfusion.Windows.PdfViewer;assembly=Syncfusion.PdfViewer.WPF"
       x:Class="PDF_Merger.Views.PDFViewer"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1000"
@@ -12,7 +13,11 @@
 
     <Grid>
 
-        
+
+
+        <PdfViewer:PdfViewerControl/>
+
+
 
     </Grid>
 </Page>

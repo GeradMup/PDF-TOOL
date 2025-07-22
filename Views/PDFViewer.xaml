@@ -1,23 +1,49 @@
 ﻿<Page
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PDF_Merger.Views"
-      xmlns:PdfViewer="clr-namespace:Syncfusion.Windows.PdfViewer;assembly=Syncfusion.PdfViewer.WPF"
-      x:Class="PDF_Merger.Views.PDFViewer"
-      mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1000"
-      Title="PDFViewer"
-      Background="White">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:PdfViewer="clr-namespace:Syncfusion.Windows.PdfViewer;assembly=Syncfusion.PdfViewer.WPF" 
+    xmlns:viewmodels="clr-namespace:PDF_Merger.ViewModels"
+    x:Class="PDF_Merger.Views.PDFViewer"
+    mc:Ignorable="d"
+    d:DesignHeight="800" d:DesignWidth="1000"
+    Title="PDFViewer"
+    Background="White"
+    d:DataContext="{d:DesignInstance Type=viewmodels:PDFViewModel}">
 
     <Grid>
+        <!-- <PdfViewer:PdfViewerControl ItemSource="{Binding DocumentStream}"/> -->
 
+        <DockPanel>
 
+            <!-- TabControl bound to Tabs -->
+            <TabControl ItemsSource="{Binding PdfTabs}"
+                SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                IsSynchronizedWithCurrentItem="True">
+                <!-- Header Template -->
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}" Margin="5,0"/>
+                            <Button Content="✕"
+                    Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding}"
+                    Margin="5,0,0,0"
+                    Padding="0" Width="16" Height="16"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
 
-        <PdfViewer:PdfViewerControl/>
-
-
+                <!-- Content Template -->
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <PdfViewer:PdfViewerControl ItemSource="{Binding DocumentStream}" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            
+        </DockPanel>
 
     </Grid>
 </Page>

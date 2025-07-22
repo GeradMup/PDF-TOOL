@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PDF_Merger.ViewModels;
 
 namespace PDF_Merger.Views
 {
@@ -20,9 +21,17 @@ namespace PDF_Merger.Views
     /// </summary>
     public partial class PDFViewer : Page
     {
+        readonly PDFViewModel viewModel = new();
         public PDFViewer()
         {
             InitializeComponent();
+            DataContext = viewModel;
+        }
+
+        internal void LoadPdf(string mergeFilePath)
+        {
+            //Load pdf file into the viewer
+            viewModel.LoadPdf(mergeFilePath);
         }
     }
 }

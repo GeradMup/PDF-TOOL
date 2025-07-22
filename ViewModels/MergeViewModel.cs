@@ -28,6 +28,8 @@ namespace PDF_Merger.ViewModels
 
         readonly List<string> TempFilePaths = [];
 
+        private string mergedFilePath = string.Empty;
+
         public int GetIndex(string fileName)
         {
             return Documents.IndexOf(fileName);
@@ -130,19 +132,21 @@ namespace PDF_Merger.ViewModels
                 //Avoid compression to maximize quality
                 mergedDocs.Compression = PdfCompressionLevel.None;
                 
+                //Before saving, make sure the current file is not open in the very same project we are working on
 
                 //Save the final merged document
                 string mergedDocumentPath = GetFilePath();
                 mergedDocs.Save(mergedDocumentPath);
                 mergedDocs.Close();
 
+                mergedFilePath = mergedDocumentPath;
                 //Show that the process was completed
                 MessageBox.Show("Documents have been merged successfully!", "SUCCESS!", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to merge documents! Please check if the files are valid PDF files.", ex);
+                throw new Exception($"Failed to merge documents! {ex.Message}");
             }
         }
 
@@ -182,6 +186,11 @@ namespace PDF_Merger.ViewModels
                 return false;
             }
             return true;
+        }
+
+        internal string GetMergedFilePath()
+        {
+            return mergedFilePath;
         }
     }
 }

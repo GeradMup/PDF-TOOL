@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PDF_Merger.Services
 {
-    internal class Delegates
+    public class Delegates
     {
+        public delegate void OnMergeComplete(string mergedFilePath);
     }
 }

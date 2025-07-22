@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using PDF_Merger.ViewModels;
 using System.IO;
 using Path = System.IO.Path;
+using static PDF_Merger.Services.Delegates;
 
 namespace PDF_Merger.Views
 {
@@ -26,10 +27,12 @@ namespace PDF_Merger.Views
     {
 
         private readonly MergeViewModel viewModel = new();
-        public MergePage()
+        private readonly OnMergeComplete OnMergeComplete;
+        public MergePage(OnMergeComplete onMergeComplete_)
         {
             InitializeComponent();
             DataContext = viewModel;
+            OnMergeComplete = onMergeComplete_;
         }
 
         private void ListViewItem_Drop(object sender, DragEventArgs e)
@@ -178,6 +181,7 @@ namespace PDF_Merger.Views
             try
             {
                 viewModel.MergeFiles();
+                OnMergeComplete(viewModel.GetMergedFilePath());
             }
             catch (Exception ex)
             {

@@ -18,7 +18,7 @@ namespace PDF_Merger
         {
             
             // Register Syncfusion license
-            SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JEaF5cXmRCeUx0Qnxbf1x1ZFBMYVhbQHFPIiBoS35Rc0VkW39fd3VRQmddUU11VEFd");
+            SyncfusionLicenseProvider.RegisterLicense("Mzk2MTgzMkAzMzMwMmUzMDJlMzAzYjMzMzAzYmlybk04RFhweE8rKzE5c0NycXEzZFVMS295NXo3QkdhUWRlMjNBbFRDVlk9");
             base.OnStartup(e);
         }
     }

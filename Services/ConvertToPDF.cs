@@ -6,13 +6,12 @@ using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using System.Drawing;
 using System.Runtime.Versioning;
-using Syncfusion.DocIO.DLS;
-using Syncfusion.DocIO;
-using Syncfusion.DocIORenderer;
-using Syncfusion.Presentation;
-using Syncfusion.PresentationRenderer;
 using Syncfusion.XlsIO;
 using Syncfusion.XlsIORenderer;
+using Syncfusion.Presentation;
+using Syncfusion.PresentationRenderer;
+using Syncfusion.DocIO.DLS;
+using Syncfusion.DocIORenderer;
 
 namespace PDF_Merger.Services
 {

@@ -20,12 +20,13 @@ namespace PDF_Merger
         readonly MainViewModel viewModel;
 
         private readonly MergePage mergePage = new();
+        private readonly PDFViewer pdfViewer = new();
         public MainWindow()
         {
             InitializeComponent();
             viewModel = new();
             DataContext = viewModel;
-            MainFrame.Navigate(mergePage);
+            MainFrame.Navigate(pdfViewer);
         }
     }
 }

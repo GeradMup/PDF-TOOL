@@ -26,7 +26,7 @@ namespace PDF_Merger
             InitializeComponent();
             viewModel = new();
             DataContext = viewModel;
-            MainFrame.Navigate(pdfViewer);
+            MainFrame.Navigate(mergePage);
         }
     }
 }

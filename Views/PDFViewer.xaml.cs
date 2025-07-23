@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PDF_Merger.Controls;
 using PDF_Merger.ViewModels;
 
 namespace PDF_Merger.Views
@@ -32,6 +33,14 @@ namespace PDF_Merger.Views
         {
             //Load pdf file into the viewer
             viewModel.LoadPdf(mergeFilePath);
+        }
+
+        private void PdfTab_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is SingleTab pdfTab)
+            {
+                //pdfTab.LoadPdf(viewModel.FilePath());
+            }
         }
     }
 }

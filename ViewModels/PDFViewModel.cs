@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using Syncfusion.DocIO.DLS;
 
 namespace PDF_Merger.ViewModels
@@ -14,11 +16,14 @@ namespace PDF_Merger.ViewModels
 
     public partial class PdfTab : ObservableObject
     {
-        [ObservableProperty]
-        public string title;
+        
+        public string FilePath { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        public Stream documentStream;
+        public string Header => Path.GetFileName(FilePath);
+
+        public string ToolTip => FilePath;
+
+        public override string ToString() => FilePath;
     }
 
     public partial class PDFViewModel : ObservableObject
@@ -30,15 +35,15 @@ namespace PDF_Merger.ViewModels
         [ObservableProperty]
         public PdfTab selectedTab;
 
-        public IRelayCommand<string> AddTabCommand { get; }
-        public IRelayCommand<PdfTab> CloseTabCommand { get; }
-
+        //public IRelayCommand<string> AddTabCommand { get; }
+        //public IRelayCommand<PdfTab> CloseTabCommand { get; }
+        private string SelectedFilePath { get; set; } = string.Empty;
 
 
         public PDFViewModel() 
         {
-            AddTabCommand = new RelayCommand<string>(AddTab);
-            CloseTabCommand = new RelayCommand<PdfTab>(tab => pdfTabs.Remove(tab));
+            //AddTabCommand = new RelayCommand<string>(AddTab);
+            //CloseTabCommand = new RelayCommand<PdfTab>(tab => pdfTabs.Remove(tab));
         }
 
         internal void LoadPdf(string mergeFilePath)
@@ -54,16 +59,50 @@ namespace PDF_Merger.ViewModels
             }
         }
 
+        [RelayCommand]
         private void AddTab(string pathToPdf)
         {
-            var doc = new PdfTab
+            if (!File.Exists(pathToPdf)) return;
+
+            PdfTab pdfItem = new() { FilePath = pathToPdf };
+            PdfTabs.Add(pdfItem);
+            SelectedTab = pdfItem; 
+        }
+
+        [RelayCommand]
+        private void OpenPdf()
+        {
+            OpenFileDialog dialog = new()
             {
-                Title = Path.GetFileNameWithoutExtension(pathToPdf),
-                DocumentStream = File.OpenRead(pathToPdf)
+                Filter = "PDF Files (*.pdf)|*.pdf",
+                Multiselect = false
             };
 
-            PdfTabs.Add(doc);
-            SelectedTab = doc;
+            if (dialog.ShowDialog() == true)
+            {
+                AddTab(dialog.FileName);
+                SelectedFilePath = dialog.FileName;
+            }
+            else 
+            {
+                SelectedFilePath = string.Empty;
+            }
+        }
+
+        [RelayCommand]
+        public void CloseTab(PdfTab tab)
+        {
+            PdfTabs.Remove(tab);
+        }
+
+        /// <summary>
+        /// Open a FileDialog to select a PDF file and return its path.
+        /// </summary>
+        /// <returns>string</returns>
+        internal string FilePath()
+        {
+            //Open a FileDialog to select a PDF file and get its path
+            return SelectedFilePath;
         }
     }
 }

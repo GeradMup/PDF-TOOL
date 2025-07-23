@@ -1,49 +1,43 @@
 ﻿<Page
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:PdfViewer="clr-namespace:Syncfusion.Windows.PdfViewer;assembly=Syncfusion.PdfViewer.WPF" 
-    xmlns:viewmodels="clr-namespace:PDF_Merger.ViewModels"
-    x:Class="PDF_Merger.Views.PDFViewer"
-    mc:Ignorable="d"
-    d:DesignHeight="800" d:DesignWidth="1000"
-    Title="PDFViewer"
-    Background="White"
-    d:DataContext="{d:DesignInstance Type=viewmodels:PDFViewModel}">
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:viewmodels="clr-namespace:PDF_Merger.ViewModels"
+xmlns:syncfusion="http://schemas.syncfusion.com/wpf" 
+xmlns:controls="clr-namespace:PDF_Merger.Controls"
+x:Class="PDF_Merger.Views.PDFViewer"
+mc:Ignorable="d"
+d:DesignHeight="800" d:DesignWidth="1000"
+Title="PDFViewer"
+Background="White"
+d:DataContext="{d:DesignInstance Type={x:Type viewmodels:PDFViewModel}}">
 
-    <Grid>
-        <!-- <PdfViewer:PdfViewerControl ItemSource="{Binding DocumentStream}"/> -->
+<DockPanel>
+    <Button Content="Open PDF" DockPanel.Dock="Top" Margin="5"
+            Command="{Binding OpenPdfCommand}" />
 
-        <DockPanel>
+    <syncfusion:TabControlExt ItemsSource="{Binding PdfTabs}"
+                              SelectedItem="{Binding SelectedTab}">
 
-            <!-- TabControl bound to Tabs -->
-            <TabControl ItemsSource="{Binding PdfTabs}"
-                SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-                IsSynchronizedWithCurrentItem="True">
-                <!-- Header Template -->
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Title}" Margin="5,0"/>
-                            <Button Content="✕"
-                    Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                    CommandParameter="{Binding}"
-                    Margin="5,0,0,0"
-                    Padding="0" Width="16" Height="16"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
+        <syncfusion:TabControlExt.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Orientation="Horizontal" ToolTip="{Binding ToolTip}">
+                    <TextBlock Text="{Binding Header}" Margin="0,0,5,0" />
+                    <Button Content="✖" Width="16" Height="16" Padding="0" Margin="4,0,0,0"
+                            Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+                </StackPanel>
+            </DataTemplate>
+        </syncfusion:TabControlExt.ItemTemplate>
 
-                <!-- Content Template -->
-                <TabControl.ContentTemplate>
-                    <DataTemplate>
-                        <PdfViewer:PdfViewerControl ItemSource="{Binding DocumentStream}" />
-                    </DataTemplate>
-                </TabControl.ContentTemplate>
-            </TabControl>
-            
-        </DockPanel>
+        <syncfusion:TabControlExt.ContentTemplate>
+            <DataTemplate>
+                <controls:SingleTab x:Name="pdfTab" Loaded="PdfTab_Loaded" />
+            </DataTemplate>
+        </syncfusion:TabControlExt.ContentTemplate>
+    </syncfusion:TabControlExt>
+</DockPanel>
 
-    </Grid>
 </Page>

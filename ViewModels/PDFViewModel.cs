@@ -9,17 +9,18 @@ using System.Windows.Forms;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using PDF_Merger.Controls;
 using Syncfusion.DocIO.DLS;
 
 namespace PDF_Merger.ViewModels
 {
 
-    public partial class PdfTab : ObservableObject
+    public partial class PdfTabViewModel : ObservableObject
     {
         
         public string FilePath { get; set; } = string.Empty;
 
-        public string Header => Path.GetFileName(FilePath);
+        public string Header => Path.GetFileNameWithoutExtension(FilePath);
 
         public string ToolTip => FilePath;
 
@@ -30,10 +31,13 @@ namespace PDF_Merger.ViewModels
     {
 
         [ObservableProperty]
-        public ObservableCollection<PdfTab> pdfTabs = [];
+        public ObservableCollection<PdfTabViewModel> pdfTabs = [];
 
         [ObservableProperty]
-        public PdfTab selectedTab;
+        public PdfTabViewModel selectedTab;
+
+        [ObservableProperty]
+        private int selectedIndex;
 
         //public IRelayCommand<string> AddTabCommand { get; }
         //public IRelayCommand<PdfTab> CloseTabCommand { get; }
@@ -64,7 +68,7 @@ namespace PDF_Merger.ViewModels
         {
             if (!File.Exists(pathToPdf)) return;
 
-            PdfTab pdfItem = new() { FilePath = pathToPdf };
+            PdfTabViewModel pdfItem = new() { FilePath = pathToPdf };
             PdfTabs.Add(pdfItem);
             SelectedTab = pdfItem; 
         }
@@ -90,7 +94,7 @@ namespace PDF_Merger.ViewModels
         }
 
         [RelayCommand]
-        public void CloseTab(PdfTab tab)
+        public void CloseTab(PdfTabViewModel tab)
         {
             PdfTabs.Remove(tab);
         }

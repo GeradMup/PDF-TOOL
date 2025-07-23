@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PDF_Merger.Controls;
 using PDF_Merger.ViewModels;
+using Syncfusion.Pdf;
+using Syncfusion.Windows.Tools.Controls;
 
 namespace PDF_Merger.Views
 {
@@ -35,12 +38,37 @@ namespace PDF_Merger.Views
             viewModel.LoadPdf(mergeFilePath);
         }
 
-        private void PdfTab_Loaded(object sender, RoutedEventArgs e)
+        private void OpenPdfButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is SingleTab pdfTab)
+            var dialog = new Microsoft.Win32.OpenFileDialog
             {
-                //pdfTab.LoadPdf(viewModel.FilePath());
+                Filter = "PDF Files (*.pdf)|*.PDF",
+                Multiselect = false
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                AddTab(dialog.FileName);
             }
+        }
+
+        private void AddTab(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return;
+
+            var vm = new PdfTabViewModel { FilePath = filePath };
+            SingleTab pdfTab = new(vm);
+
+            var tabItem = new TabItemExt
+            {
+                Header = vm.Header,
+                Content = pdfTab,
+                ToolTip = vm.ToolTip
+            };
+
+            TabControl.Items.Add(tabItem);
+            TabControl.SelectedItem = tabItem;
         }
     }
 }

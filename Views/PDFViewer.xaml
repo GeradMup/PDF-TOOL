@@ -6,6 +6,7 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 xmlns:viewmodels="clr-namespace:PDF_Merger.ViewModels"
 xmlns:syncfusion="http://schemas.syncfusion.com/wpf" 
 xmlns:controls="clr-namespace:PDF_Merger.Controls"
+xmlns:vm="clr-namespace:PDF_Merger.ViewModels"
 x:Class="PDF_Merger.Views.PDFViewer"
 mc:Ignorable="d"
 d:DesignHeight="800" d:DesignWidth="1000"
@@ -13,31 +14,33 @@ Title="PDFViewer"
 Background="White"
 d:DataContext="{d:DesignInstance Type={x:Type viewmodels:PDFViewModel}}">
 
-<DockPanel>
-    <Button Content="Open PDF" DockPanel.Dock="Top" Margin="5"
-            Command="{Binding OpenPdfCommand}" />
+    <DockPanel>
+        <Button Content="Open PDF" 
+                x:Name="OpenPdfButton"
+                DockPanel.Dock="Top" Margin="2"
+                Click="OpenPdfButton_Click"/>
 
-    <syncfusion:TabControlExt ItemsSource="{Binding PdfTabs}"
-                              SelectedItem="{Binding SelectedTab}">
+        <syncfusion:TabControlExt x:Name="TabControl" 
+                                  SelectedIndex="{Binding SelectedIndex}"
+                                  >
 
-        <syncfusion:TabControlExt.ItemTemplate>
-            <DataTemplate>
-                <StackPanel Orientation="Horizontal" ToolTip="{Binding ToolTip}">
-                    <TextBlock Text="{Binding Header}" Margin="0,0,5,0" />
-                    <Button Content="✖" Width="16" Height="16" Padding="0" Margin="4,0,0,0"
-                            Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}"
-                            Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
-                </StackPanel>
-            </DataTemplate>
-        </syncfusion:TabControlExt.ItemTemplate>
 
-        <syncfusion:TabControlExt.ContentTemplate>
-            <DataTemplate>
-                <controls:SingleTab x:Name="pdfTab" Loaded="PdfTab_Loaded" />
-            </DataTemplate>
-        </syncfusion:TabControlExt.ContentTemplate>
-    </syncfusion:TabControlExt>
-</DockPanel>
+            <syncfusion:TabControlExt.TabPanelTemplate>
+                <ControlTemplate>
+                    <DockPanel LastChildFill="False">
+                        <!-- Place "+" Button on the right -->
+                        <Button Content="+" Width="25" Height="25" Margin="4,0,0,0"
+                        Click="OpenPdfButton_Click"
+                        ToolTip="Open PDF"
+                        Cursor="Hand"
+                        DockPanel.Dock="Right"/>
+                        <!-- Default tab panel items -->
+                        <ItemsPresenter />
+                    </DockPanel>
+                </ControlTemplate>
+                
+            </syncfusion:TabControlExt.TabPanelTemplate>
+        </syncfusion:TabControlExt>
+    </DockPanel>
 
 </Page>

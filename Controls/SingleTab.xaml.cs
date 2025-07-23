@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PDF_Merger.ViewModels;
+using PDF_Merger.Views;
 
 namespace PDF_Merger.Controls
 {
@@ -21,10 +23,32 @@ namespace PDF_Merger.Controls
     /// </summary>
     public partial class SingleTab : UserControl
     {
-        public SingleTab()
+
+        private string loadedFilePath = string.Empty;
+        private bool isPdfLoaded = false;
+        public SingleTab(PdfTabViewModel vm)
         {
             InitializeComponent();
-            
+            DataContext = vm;
+
+            if (File.Exists(vm.FilePath)) 
+            {
+                pdfViewer.Load(vm.FilePath);
+            }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            TryLoadPdf();
+        }
+
+        public void TryLoadPdf()
+        {
+            if (DataContext is PdfTabViewModel vm && File.Exists(vm.FilePath))
+            {
+                pdfViewer.Load(vm.FilePath);
+                isPdfLoaded = true;
+            }
         }
 
         public void LoadPdf(string filePath)
@@ -39,12 +63,6 @@ namespace PDF_Merger.Controls
             }
         }
 
-        private void PdfViewer_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.NewValue is PdfTab tabItem)
-            {
-                pdfViewer.Load(tabItem.FilePath);
-            }
-        }
+        
     }
 }

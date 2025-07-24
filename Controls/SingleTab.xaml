@@ -12,7 +12,8 @@
     <Grid>
         <PDFViewer:PdfViewerControl x:Name="PdfViewer"
                                     WarnBeforeClose="True"
-                                    DocumentLoaded="PdfViewer_DocumentLoaded">
+                                    DocumentLoaded="PdfViewer_DocumentLoaded"
+                                    ShowToolbar="True">
 
 
         </PDFViewer:PdfViewerControl>

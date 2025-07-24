@@ -10,6 +10,11 @@
       Title="SplitterPage">
 
     <Grid>
-        <syncfusion:PdfViewerControl x:Name="SplitterPdf"/>
+        <syncfusion:PdfViewerControl x:Name="SplitterPdf"
+                                     DocumentLoaded="SplitterPdf_DocumentLoaded"
+                                     EnableRedactionTool="False"
+                                     IsBookmarkEnabled="False"
+                                     IsManipulationEnabled="False"
+                                     />
     </Grid>
 </Page>

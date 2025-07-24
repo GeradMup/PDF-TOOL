@@ -41,7 +41,7 @@ namespace PDF_Merger.Controls
             }
             FilePath = vm.FilePath;
 
-            //Hook to all document change events
+            PdfViewer.ShowToolbar = true;
            
         }
 

@@ -12,7 +12,7 @@
     <Grid>
         <PDFViewer:PdfViewerControl x:Name="PdfViewer"
                                     WarnBeforeClose="True"
-                                    Loaded="PdfViewer_Loaded">
+                                    DocumentLoaded="PdfViewer_DocumentLoaded">
 
 
         </PDFViewer:PdfViewerControl>

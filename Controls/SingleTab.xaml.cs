@@ -49,7 +49,7 @@ namespace PDF_Merger.Controls
             return PdfViewer;
         }
 
-        private void PdfViewer_Loaded(object sender, RoutedEventArgs e)
+        private void PdfViewer_DocumentLoaded(object sender, EventArgs args)
         {
             DocumentToolbar toolbar = PdfViewer.Template.FindName("PART_Toolbar", PdfViewer) as DocumentToolbar;
             ToggleButton FileButton = (ToggleButton)toolbar.Template.FindName("PART_FileToggleButton", toolbar);

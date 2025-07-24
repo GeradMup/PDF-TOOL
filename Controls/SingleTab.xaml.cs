@@ -26,6 +26,9 @@ namespace PDF_Merger.Controls
     public partial class SingleTab : UserControl
     {
         public string FilePath { get; }
+
+        public bool IsModified { get; private set; } = false;
+
         public SingleTab(PdfTabViewModel vm)
         {
             InitializeComponent();
@@ -36,19 +39,14 @@ namespace PDF_Merger.Controls
                 PdfViewer.Load(vm.FilePath);
             }
             FilePath = vm.FilePath;
+
+            //Hook to all document change events
+           
         }
 
-
-        public void LoadPdf(string filePath)
+        public PdfViewerControl GetPdfViewer() 
         {
-            try
-            {
-                PdfViewer.Load(filePath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading PDF: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return PdfViewer;
         }
 
         /// <summary>

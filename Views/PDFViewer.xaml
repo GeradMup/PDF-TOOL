@@ -20,7 +20,7 @@ d:DataContext="{d:DesignInstance Type={x:Type viewmodels:PDFViewModel}}">
                                   IsNewButtonEnabled="True"
                                   NewButtonAlignment="Last"
                                   NewButtonClick="TabControl_NewButtonClick"
-                                  />
+                                  OnCloseButtonClick="TabControl_OnCloseButtonClick"/>
 
 
     </DockPanel>

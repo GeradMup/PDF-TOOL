@@ -18,6 +18,7 @@ using Microsoft.Win32;
 using PDF_Merger.Controls;
 using PDF_Merger.ViewModels;
 using Syncfusion.Pdf;
+using Syncfusion.Windows.PdfViewer;
 using Syncfusion.Windows.Tools.Controls;
 
 namespace PDF_Merger.Views
@@ -38,7 +39,7 @@ namespace PDF_Merger.Views
         internal void LoadPdf(string mergeFilePath)
         {
             //Load pdf file into the viewer
-            viewModel.LoadPdf(mergeFilePath);
+            AddTab(mergeFilePath);
         }
 
         private void OpenPdfButton_Click(object sender, RoutedEventArgs e)
@@ -95,6 +96,40 @@ namespace PDF_Merger.Views
             if (dialog.ShowDialog() == true)
             {
                 AddTab(dialog.FileName);
+            }
+        }
+
+        private void TabControl_OnCloseButtonClick(object sender, CloseTabEventArgs e)
+        {
+            // Get the current tab item
+            TabItemExt tabItem = (sender as TabControl).SelectedItem as TabItemExt;
+
+            // Get the SingleTab from the tab item's content
+            SingleTab singleTab = tabItem.Content as SingleTab;
+
+            // Get the PdfViewerControl from the tab item's content
+            PdfViewerControl pdfViewer = singleTab.GetPdfViewer();
+
+            // Check if the document has been modified
+            if (pdfViewer.IsDocumentEdited)
+            {
+                // Prompt the user to save
+                MessageBoxResult result = MessageBox.Show("Do you want to save changes?", "Save?", MessageBoxButton.YesNoCancel);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        // Save the document
+                        pdfViewer.Save(singleTab.FilePath);
+                        break;
+                    case MessageBoxResult.No:
+                        // Don't save, just close
+                        break;
+                    case MessageBoxResult.Cancel:
+                        // Cancel closing the tab
+                        e.Cancel = true;
+                        break;
+                }
             }
         }
     }

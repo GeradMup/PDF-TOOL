@@ -22,6 +22,7 @@ namespace PDF_Merger
 
         private readonly MergePage mergePage;
         private readonly PDFViewer pdfViewer = new();
+        private readonly SplitterPage splitterPage = new();
 
         readonly OnMergeComplete onMergeComplete;
 
@@ -68,6 +69,12 @@ namespace PDF_Merger
         {
             pdfViewer.LoadNewDoc();
             MainFrame.Navigate(pdfViewer);
+        }
+
+        private void PdfSplitter_Click(object sender, RoutedEventArgs e)
+        {
+            splitterPage.LoadPdf();
+            MainFrame.Navigate(splitterPage);   
         }
     }
 }

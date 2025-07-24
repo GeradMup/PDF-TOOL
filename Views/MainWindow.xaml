@@ -79,6 +79,11 @@
                     Style="{StaticResource RoundedButtonStyle}"
                     Click="PdfMerge_Click"/>
 
+            <Button x:Name="PdfSplitter"
+                    Content="Splitter" 
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Click="PdfSplitter_Click"/>
+
         </StackPanel>
         
         

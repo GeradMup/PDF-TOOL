@@ -128,9 +128,11 @@ namespace PDF_Merger.Views
                     case MessageBoxResult.Cancel:
                         // Cancel closing the tab
                         e.Cancel = true;
-                        break;
+                        return;
                 }
             }
+            // Remove the tab item from the TabControl
+            TabControl.Items.Remove(tabItem);
         }
     }
 }

@@ -49,25 +49,13 @@ namespace PDF_Merger.Controls
             return PdfViewer;
         }
 
-        /// <summary>
-        /// Handles the Loaded event of the PdfViewer control.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void PdfViewer_Loaded(object sender, RoutedEventArgs e)
         {
-            //Get the instance of the toolbar using its template name.
             DocumentToolbar toolbar = PdfViewer.Template.FindName("PART_Toolbar", PdfViewer) as DocumentToolbar;
-
-            //Get the instance of the file menu button using its template name.
             ToggleButton FileButton = (ToggleButton)toolbar.Template.FindName("PART_FileToggleButton", toolbar);
-
-            //Get the instance of the file menu button context menu and the item collection.
             ContextMenu FileContextMenu = FileButton.ContextMenu;
-
             foreach (MenuItem FileMenuItem in FileContextMenu.Items)
             {
-                //Get the instance of the open menu item using its template name and disable its visibility.
                 if (FileMenuItem.Name == "PART_OpenMenuItem")
                     FileMenuItem.Visibility = System.Windows.Visibility.Collapsed;
             }

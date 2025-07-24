@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using PdfiumViewer;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf;
+using static PDF_Merger.Services.Delegates;
 
 namespace PDF_Merger.Views
 {
@@ -30,10 +31,11 @@ namespace PDF_Merger.Views
     {
 
         private string currentFilePath = string.Empty;
-        public SplitterPage()
+        private readonly OnSplitComplete SplitComplete;
+        public SplitterPage(OnSplitComplete onSplitComplete)
         {
             InitializeComponent();
-
+            SplitComplete = onSplitComplete;
         }
 
         [SupportedOSPlatform("windows6.1")]
@@ -53,7 +55,7 @@ namespace PDF_Merger.Views
         }
 
         [SupportedOSPlatform("windows6.1")]
-        private void LoadPdfThumbnails(string pdfPath)
+        public void LoadPdfThumbnails(string pdfPath)
         {
             if (!File.Exists(pdfPath))
             {
@@ -106,6 +108,8 @@ namespace PDF_Merger.Views
                     int toPage = int.Parse(LastPage.Text);
                     SplitRange(currentFilePath, dialog.FileName, fromPage, toPage);
                     MessageBox.Show("PDF split successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ClearInputs();
+                    SplitComplete(dialog.FileName);
                 }
                 catch (FormatException)
                 {
@@ -120,6 +124,12 @@ namespace PDF_Merger.Views
                     MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void ClearInputs()
+        {
+            FirstPage.Text = string.Empty;
+            LastPage.Text = string.Empty;
         }
 
         public static void SplitRange(string inputPath, string outputPath, int fromPage, int toPage)

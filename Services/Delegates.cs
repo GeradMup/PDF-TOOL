@@ -9,5 +9,6 @@ namespace PDF_Merger.Services
     public class Delegates
     {
         public delegate void OnMergeComplete(string mergedFilePath);
+        public delegate void OnSplitComplete(string splitFilePath);
     }
 }

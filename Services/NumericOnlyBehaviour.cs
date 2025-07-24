@@ -42,14 +42,36 @@ namespace PDF_Merger.Services
 
         private static void PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !e.Text.All(char.IsDigit);
+            if (sender is not TextBox textBox)
+                return;
+
+            // Simulate what the full text would be if input is allowed
+            string newText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+
+            e.Handled = !IsValidInput(newText);
         }
 
         private static void OnPaste(object sender, DataObjectPastingEventArgs e)
         {
-            if (!e.DataObject.GetDataPresent(typeof(string))) return;
-            var text = (string)e.DataObject.GetData(typeof(string));
-            if (!text.All(char.IsDigit)) e.CancelCommand();
+            if (sender is not TextBox textBox) return;
+
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string pasteText = (string)e.DataObject.GetData(typeof(string));
+                string newText = textBox.Text.Insert(textBox.SelectionStart, pasteText);
+
+                if (!IsValidInput(newText))
+                    e.CancelCommand();
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        private static bool IsValidInput(string text)
+        {
+            return int.TryParse(text, out int value) && value >= 1;
         }
     }
 }

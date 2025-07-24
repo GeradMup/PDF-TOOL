@@ -52,7 +52,7 @@ namespace PDF_Merger.Views
         private void AddTab(string filePath)
         {
             if (!File.Exists(filePath))
-                 return;
+                return;
 
             // Check if the file is already open
 
@@ -89,7 +89,7 @@ namespace PDF_Merger.Views
             LoadNewDoc();
         }
 
-        public void LoadNewDoc() 
+        public void LoadNewDoc()
         {
             var dialog = new OpenFileDialog
             {
@@ -141,6 +141,18 @@ namespace PDF_Merger.Views
             // Remove the corresponding DocObject from the list
             DocObject docObject = DocObjects.FirstOrDefault(obj => obj.FilePath == singleTab.FilePath);
             if (docObject != null) DocObjects.Remove(docObject);
+        }
+
+        public string PathOfActivePdf() 
+        {
+            // Get the currently selected tab item
+            if (TabControl.SelectedItem is TabItemExt selectedTab && selectedTab.Content is SingleTab singleTab)
+            {
+                // Return the file path of the active PDF
+                return singleTab.FilePath;
+            }
+            // If no tab is selected or the content is not a SingleTab, return an empty string
+            return string.Empty;
         }
     }
 }

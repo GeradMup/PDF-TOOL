@@ -87,7 +87,7 @@ namespace PDF_Merger.ViewModels
             if (!Documents.Contains(fileName))
             {
                 Documents.Add(fileName);
-                DocObjects.Add(new DocObject(fileName, filePath));
+                DocObjects.Add(new DocObject(filePath));
             }
         }
 

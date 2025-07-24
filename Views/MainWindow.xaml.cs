@@ -41,8 +41,20 @@ namespace PDF_Merger
             MainFrame.Navigate(pdfViewer);
         }
 
+        [SupportedOSPlatform("windows6.1")]
         private void PdfMerge_Click(object sender, RoutedEventArgs e)
         {
+            // Before attempting to merge, check if we are currently displaying any docs. 
+            // If yes, ask if the user wants to merge those?
+            if (pdfViewer.DocObjects.Count > 1)
+            {
+                MessageBoxResult result = MessageBox.Show("Do you want to merge the Documents in the Viewer?", "Merge Documents", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    mergePage.AddDocuments(pdfViewer.DocObjects);
+                }
+            }
             MainFrame.Navigate(mergePage);
         }
 

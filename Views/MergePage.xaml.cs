@@ -17,6 +17,7 @@ using PDF_Merger.ViewModels;
 using System.IO;
 using Path = System.IO.Path;
 using static PDF_Merger.Services.Delegates;
+using PDF_Merger.Models;
 
 namespace PDF_Merger.Views
 {
@@ -186,6 +187,15 @@ namespace PDF_Merger.Views
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while merging files: {ex.Message}", "ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [SupportedOSPlatform("windows6.1")]
+        internal void AddDocuments(List<DocObject> docObjects)
+        {
+            foreach (DocObject docObject in docObjects) 
+            {
+                viewModel.AddDocument(docObject.DocumentName, docObject.FilePath);
             }
         }
     }

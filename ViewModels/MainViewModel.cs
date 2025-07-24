@@ -13,12 +13,11 @@ using Syncfusion.Pdf.Parsing;
 using System.Runtime.Versioning;
 using Syncfusion.Pdf.Interactive;
 using Syncfusion.Drawing;
+using PDF_Merger.Models;
 
 namespace PDF_Merger.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
-    {
-
-       
+    public partial class MainViewModel : ObservableObject 
+    { 
     }
 }

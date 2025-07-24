@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using PDF_Merger.Controls;
+using PDF_Merger.Models;
 using PDF_Merger.ViewModels;
 using Syncfusion.Pdf;
 using Syncfusion.Windows.PdfViewer;
@@ -29,6 +30,7 @@ namespace PDF_Merger.Views
     public partial class PDFViewer : Page
     {
         readonly PDFViewModel viewModel = new();
+        public List<DocObject> DocObjects { get; private set; } = [];
 
         public PDFViewer()
         {
@@ -78,6 +80,8 @@ namespace PDF_Merger.Views
 
             TabControl.Items.Add(tabItem);
             TabControl.SelectedItem = tabItem;
+
+            DocObjects.Add(new DocObject(filePath));
         }
 
         private void TabControl_NewButtonClick(object sender, EventArgs e)
@@ -131,8 +135,12 @@ namespace PDF_Merger.Views
                         return;
                 }
             }
+
             // Remove the tab item from the TabControl
             TabControl.Items.Remove(tabItem);
+            // Remove the corresponding DocObject from the list
+            DocObject docObject = DocObjects.FirstOrDefault(obj => obj.FilePath == singleTab.FilePath);
+            if (docObject != null) DocObjects.Remove(docObject);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using PDF_Merger.Services;
 using Syncfusion.Licensing;
 
 namespace PDF_Merger
@@ -19,6 +20,8 @@ namespace PDF_Merger
             
             // Register Syncfusion license
             SyncfusionLicenseProvider.RegisterLicense("Mzk2MTgzMkAzMzMwMmUzMDJlMzAzYjMzMzAzYmlybk04RFhweE8rKzE5c0NycXEzZFVMS295NXo3QkdhUWRlMjNBbFRDVlk9");
+            PdfiumBootstrapper.Initialize();    
+
             base.OnStartup(e);
         }
     }

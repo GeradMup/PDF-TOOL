@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using PDF_Merger.ViewModels;
 using PDF_Merger.Views;
 using Syncfusion.Windows.PdfViewer;
@@ -51,14 +52,24 @@ namespace PDF_Merger.Controls
 
         private void PdfViewer_DocumentLoaded(object sender, EventArgs args)
         {
-            DocumentToolbar toolbar = PdfViewer.Template.FindName("PART_Toolbar", PdfViewer) as DocumentToolbar;
-            ToggleButton FileButton = (ToggleButton)toolbar.Template.FindName("PART_FileToggleButton", toolbar);
-            ContextMenu FileContextMenu = FileButton.ContextMenu;
-            foreach (MenuItem FileMenuItem in FileContextMenu.Items)
+            // Wait until the visual tree and templates are ready
+            Dispatcher.BeginInvoke(new Action(() =>
             {
-                if (FileMenuItem.Name == "PART_OpenMenuItem")
-                    FileMenuItem.Visibility = System.Windows.Visibility.Collapsed;
-            }
+                if (PdfViewer.Template?.FindName("PART_Toolbar", PdfViewer) is not DocumentToolbar toolbar) return;
+
+                if (toolbar.Template?.FindName("PART_FileToggleButton", toolbar) is not ToggleButton fileButton) return;
+
+                // Optional: Do something with the context menu
+                ContextMenu FileContextMenu = fileButton.ContextMenu;
+
+                if (FileContextMenu == null) return;
+                foreach (MenuItem FileMenuItem in FileContextMenu.Items)
+                {
+                    if (FileMenuItem.Name == "PART_OpenMenuItem")
+                        FileMenuItem.Visibility = System.Windows.Visibility.Collapsed;
+                }
+
+            }), DispatcherPriority.Loaded);
         }
     }
 }

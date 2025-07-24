@@ -25,7 +25,7 @@ namespace PDF_Merger.Controls
     /// </summary>
     public partial class SingleTab : UserControl
     {
-
+        public string FilePath { get; }
         public SingleTab(PdfTabViewModel vm)
         {
             InitializeComponent();
@@ -35,6 +35,7 @@ namespace PDF_Merger.Controls
             {
                 PdfViewer.Load(vm.FilePath);
             }
+            FilePath = vm.FilePath;
         }
 
 

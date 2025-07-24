@@ -48,8 +48,22 @@ namespace PDF_Merger.Views
 
         private void AddTab(string filePath)
         {
-           // if (!File.Exists(filePath))
-           //     return;
+            if (!File.Exists(filePath))
+                 return;
+
+            // Check if the file is already open
+
+            foreach (TabItemExt tab in TabControl.Items.OfType<TabItemExt>())
+            {
+                if (tab.Content is SingleTab singleTab)
+                {
+                    if (singleTab.FilePath == filePath)
+                    {
+                        TabControl.SelectedItem = tab;
+                        return;
+                    }
+                }
+            }
 
             var vm = new PdfTabViewModel { FilePath = filePath };
             SingleTab pdfTab = new(vm);

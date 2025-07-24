@@ -51,5 +51,11 @@ namespace PDF_Merger
             pdfViewer.LoadPdf(mergeFilePath);
             MainFrame.Navigate(pdfViewer);
         }
+
+        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            pdfViewer.LoadNewDoc();
+            MainFrame.Navigate(pdfViewer);
+        }
     }
 }

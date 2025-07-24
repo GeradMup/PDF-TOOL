@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -15,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PDF_Merger.ViewModels;
 using PDF_Merger.Views;
+using Syncfusion.Windows.PdfViewer;
 
 namespace PDF_Merger.Controls
 {
@@ -24,8 +26,6 @@ namespace PDF_Merger.Controls
     public partial class SingleTab : UserControl
     {
 
-        private string loadedFilePath = string.Empty;
-        private bool isPdfLoaded = false;
         public SingleTab(PdfTabViewModel vm)
         {
             InitializeComponent();
@@ -33,29 +33,16 @@ namespace PDF_Merger.Controls
 
             if (File.Exists(vm.FilePath)) 
             {
-                pdfViewer.Load(vm.FilePath);
+                PdfViewer.Load(vm.FilePath);
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            TryLoadPdf();
-        }
-
-        public void TryLoadPdf()
-        {
-            if (DataContext is PdfTabViewModel vm && File.Exists(vm.FilePath))
-            {
-                pdfViewer.Load(vm.FilePath);
-                isPdfLoaded = true;
-            }
-        }
 
         public void LoadPdf(string filePath)
         {
             try
             {
-                pdfViewer.Load(filePath);
+                PdfViewer.Load(filePath);
             }
             catch (Exception ex)
             {
@@ -63,6 +50,28 @@ namespace PDF_Merger.Controls
             }
         }
 
-        
+        /// <summary>
+        /// Handles the Loaded event of the PdfViewer control.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PdfViewer_Loaded(object sender, RoutedEventArgs e)
+        {
+            //Get the instance of the toolbar using its template name.
+            DocumentToolbar toolbar = PdfViewer.Template.FindName("PART_Toolbar", PdfViewer) as DocumentToolbar;
+
+            //Get the instance of the file menu button using its template name.
+            ToggleButton FileButton = (ToggleButton)toolbar.Template.FindName("PART_FileToggleButton", toolbar);
+
+            //Get the instance of the file menu button context menu and the item collection.
+            ContextMenu FileContextMenu = FileButton.ContextMenu;
+
+            foreach (MenuItem FileMenuItem in FileContextMenu.Items)
+            {
+                //Get the instance of the open menu item using its template name and disable its visibility.
+                if (FileMenuItem.Name == "PART_OpenMenuItem")
+                    FileMenuItem.Visibility = System.Windows.Visibility.Collapsed;
+            }
+        }
     }
 }

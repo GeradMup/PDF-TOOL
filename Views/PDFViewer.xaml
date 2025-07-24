@@ -15,32 +15,14 @@ Background="White"
 d:DataContext="{d:DesignInstance Type={x:Type viewmodels:PDFViewModel}}">
 
     <DockPanel>
-        <Button Content="Open PDF" 
-                x:Name="OpenPdfButton"
-                DockPanel.Dock="Top" Margin="2"
-                Click="OpenPdfButton_Click"/>
-
         <syncfusion:TabControlExt x:Name="TabControl" 
                                   SelectedIndex="{Binding SelectedIndex}"
-                                  >
+                                  IsNewButtonEnabled="True"
+                                  NewButtonAlignment="Last"
+                                  NewButtonClick="TabControl_NewButtonClick"
+                                  />
 
 
-            <syncfusion:TabControlExt.TabPanelTemplate>
-                <ControlTemplate>
-                    <DockPanel LastChildFill="False">
-                        <!-- Place "+" Button on the right -->
-                        <Button Content="+" Width="25" Height="25" Margin="4,0,0,0"
-                        Click="OpenPdfButton_Click"
-                        ToolTip="Open PDF"
-                        Cursor="Hand"
-                        DockPanel.Dock="Right"/>
-                        <!-- Default tab panel items -->
-                        <ItemsPresenter />
-                    </DockPanel>
-                </ControlTemplate>
-                
-            </syncfusion:TabControlExt.TabPanelTemplate>
-        </syncfusion:TabControlExt>
     </DockPanel>
 
 </Page>

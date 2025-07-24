@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using PDF_Merger.Controls;
 using PDF_Merger.ViewModels;
 using Syncfusion.Pdf;
@@ -26,6 +28,7 @@ namespace PDF_Merger.Views
     public partial class PDFViewer : Page
     {
         readonly PDFViewModel viewModel = new();
+
         public PDFViewer()
         {
             InitializeComponent();
@@ -40,22 +43,13 @@ namespace PDF_Merger.Views
 
         private void OpenPdfButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Microsoft.Win32.OpenFileDialog
-            {
-                Filter = "PDF Files (*.pdf)|*.PDF",
-                Multiselect = false
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                AddTab(dialog.FileName);
-            }
+            LoadNewDoc();
         }
 
         private void AddTab(string filePath)
         {
-            if (!File.Exists(filePath))
-                return;
+           // if (!File.Exists(filePath))
+           //     return;
 
             var vm = new PdfTabViewModel { FilePath = filePath };
             SingleTab pdfTab = new(vm);
@@ -69,6 +63,25 @@ namespace PDF_Merger.Views
 
             TabControl.Items.Add(tabItem);
             TabControl.SelectedItem = tabItem;
+        }
+
+        private void TabControl_NewButtonClick(object sender, EventArgs e)
+        {
+            LoadNewDoc();
+        }
+
+        public void LoadNewDoc() 
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "PDF Files (*.pdf)|*.PDF",
+                Multiselect = false
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                AddTab(dialog.FileName);
+            }
         }
     }
 }

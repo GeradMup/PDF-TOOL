@@ -4,17 +4,90 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:PDF_Merger.Views" xmlns:syncfusion="clr-namespace:Syncfusion.Windows.PdfViewer;assembly=Syncfusion.PdfViewer.WPF"
+      xmlns:behaviors="clr-namespace:PDF_Merger.Services"
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1000"
       Background="White"
       Title="SplitterPage">
 
+
+    <Page.Resources>
+        <Style x:Key="TextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Margin" Value="10,2,10,2"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+        </Style>
+
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Margin" Value="10,2,10,2"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="Width" Value="115"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+    </Page.Resources>
+    
     <Grid>
-        <syncfusion:PdfViewerControl x:Name="SplitterPdf"
-                                     DocumentLoaded="SplitterPdf_DocumentLoaded"
-                                     EnableRedactionTool="False"
-                                     IsBookmarkEnabled="False"
-                                     IsManipulationEnabled="False"
-                                     />
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.03*" />
+            <RowDefinition Height="0.7*" />
+            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="0.03*" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Margin="30" Grid.Row="1">
+            <ItemsControl Name="ThumbnailGrid">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        
+                        <StackPanel Margin="5" HorizontalAlignment="Center">
+                            <Border BorderBrush="Gray" BorderThickness="1">
+                                <Image Width="150" Height="200" Source="{Binding Image}" Stretch="Uniform"/>
+                            </Border>
+                            <TextBlock Text="{Binding PageNumber}" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,4,0,0" 
+                           FontSize="12" 
+                           Foreground="Black"/>
+                        </StackPanel>
+                        
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Margin="15" Orientation="Horizontal">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="First Page" Style="{StaticResource TextBlockStyle}"/>
+                <TextBox x:Name="FirstPage" Style="{StaticResource TextBoxStyle}" behaviors:NumericOnlyBehavior.IsEnabled="True"/>    
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Last Page" Style="{StaticResource TextBlockStyle}"/>
+                <TextBox x:Name="LastPage" Style="{StaticResource TextBoxStyle}" behaviors:NumericOnlyBehavior.IsEnabled="True"/>
+                
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="" Style="{StaticResource TextBlockStyle}"/>
+                <Button Content="Split" Margin="10,2,10,2" Width="150" Height="30" 
+                        x:Name="SplitButton"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        FontSize="17"
+                        Click="SplitButton_Click"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Page>

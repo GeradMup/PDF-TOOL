@@ -71,6 +71,7 @@ namespace PDF_Merger
             MainFrame.Navigate(pdfViewer);
         }
 
+        [SupportedOSPlatform("windows6.1")]
         private void PdfSplitter_Click(object sender, RoutedEventArgs e)
         {
             splitterPage.LoadPdf();

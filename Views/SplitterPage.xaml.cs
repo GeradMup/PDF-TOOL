@@ -14,6 +14,7 @@ using PdfiumViewer;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf;
 using static PDF_Merger.Services.Delegates;
+using PDF_Merger.Models;
 
 namespace PDF_Merger.Views
 {
@@ -104,9 +105,9 @@ namespace PDF_Merger.Views
             {
                 try
                 {
-                    int fromPage = int.Parse(FirstPage.Text);
-                    int toPage = int.Parse(LastPage.Text);
-                    SplitRange(currentFilePath, dialog.FileName, fromPage, toPage);
+                   var splitRanges = GetSplitRange(FirstPage.Text);
+                    
+                    SplitRange(currentFilePath, dialog.FileName, splitRanges);
                     MessageBox.Show("PDF split successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     ClearInputs();
                     SplitComplete(dialog.FileName);
@@ -126,24 +127,57 @@ namespace PDF_Merger.Views
             }
         }
 
+        private static List<RangeObject> GetSplitRange(string input) 
+        {
+            // Split the given input by comma and trim whitespace
+            string[] parts = [.. input.Split(',').Select(p => p.Trim())];
+
+            List<RangeObject> ranges = [];
+            foreach (string part in parts) 
+            {
+                string[] subParts = part.Split('-');
+                if (subParts.Length == 1)
+                {
+                    RangeObject singleRange = new(int.Parse(part), int.Parse(part));
+                    ranges.Add(singleRange);
+                }
+                else 
+                {
+                    RangeObject range = new(int.Parse(subParts[0]), int.Parse(subParts[1]));
+                    ranges.Add(range);
+                }
+            }
+            return ranges;
+        }
+
         private void ClearInputs()
         {
             FirstPage.Text = string.Empty;
-            LastPage.Text = string.Empty;
+            //LastPage.Text = string.Empty;
         }
 
-        public static void SplitRange(string inputPath, string outputPath, int fromPage, int toPage)
+        public static void SplitRange(string inputPath, string outputPath, List<RangeObject> splitRanges)
         {
             using PdfLoadedDocument loadedDocument = new(inputPath);
 
-            if (fromPage < 1 || toPage > loadedDocument.Pages.Count || fromPage > toPage)
-                throw new ArgumentOutOfRangeException("Invalid page range.");
 
             using Syncfusion.Pdf.PdfDocument newDocument = new();
-
+/*
             for (int i = fromPage - 1; i < toPage; i++)  // 0-based indexing
             {
                 newDocument.ImportPage(loadedDocument, i);
+            }
+*/
+            foreach (RangeObject range in splitRanges)
+            {
+
+                if (range.Start < 1 || range.End > loadedDocument.Pages.Count || range.Start > range.End)
+                    throw new Exception("Invalid page range.");
+
+                for (int i = range.Start - 1; i < range.End && i < loadedDocument.Pages.Count; i++)
+                {
+                    newDocument.ImportPage(loadedDocument, i);
+                }
             }
 
             using FileStream outputFileStream = new(outputPath, FileMode.Create, FileAccess.Write);

@@ -110,5 +110,51 @@ namespace PDF_Merger
 
             MainFrame.Navigate(splitterPage);   
         }
+
+        private void ToWord_Click(object sender, RoutedEventArgs e)
+        {
+            // Ask the user if they want to convert the currently opened document
+            if (pdfViewer.DocObjects.Count > 0)
+            {
+                // If there is open document in the viewer, ask the user if they want to convert it to Word
+                MessageBoxResult result = MessageBox.Show("Do you want to convert the currently loaded PDF?", "Convert PDF", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Load the PDF from the viewer into the converter
+                    viewModel.ConvertToWord(pdfViewer.PathOfActivePdf());
+                    
+                }
+                else
+                {
+                    // If no, just go to the converter
+                    viewModel.ConvertToWord();
+                }
+            }
+            else
+            {
+                viewModel.ConvertToWord();
+            }
+        }
+
+        private void ToImage_Click(object sender, RoutedEventArgs e)
+        {
+            if (pdfViewer.DocObjects.Count == 0) 
+            {
+                MessageBox.Show("Please open a document to be converted to an image!", "Error", MessageBoxButton.OK);
+                return;
+            }
+            {
+                try 
+                {
+                    PDFToImageViewModel.ConvertToImage(pdfViewer.PathOfActivePdf());
+                    MessageBox.Show("PDF Converted to Image Successfully", "Success", MessageBoxButton.OK);
+                } 
+                catch 
+                {
+                    MessageBox.Show("Error Converting PDF to Image!", "Error!", MessageBoxButton.OK);
+                }
+                
+            }
+        }
     }
 }

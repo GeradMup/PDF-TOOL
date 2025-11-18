@@ -161,7 +161,7 @@ namespace PDF_Merger.ViewModels
             string fileName = "";
             if (fileDialog.ShowDialog() == true)
             {
-                if (fileDialog.FileName.Trim() == "") throw new Exception("Failed!");
+                if (fileDialog.FileName.Trim() == "") throw new Exception("Failed to get file name for merging save!");
 
                 fileName = fileDialog.FileName;
             }

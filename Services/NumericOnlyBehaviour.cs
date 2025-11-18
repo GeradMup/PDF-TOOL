@@ -71,7 +71,12 @@ namespace PDF_Merger.Services
 
         private static bool IsValidInput(string text)
         {
-            return int.TryParse(text, out int value) && value >= 1;
+            foreach (char c in text)
+            {
+                if (!char.IsDigit(c) && c != ',' && c != '-')
+                    return false;
+            }
+            return true;
         }
     }
 }

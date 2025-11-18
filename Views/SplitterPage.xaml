@@ -28,7 +28,7 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Bottom"/>
             <Setter Property="FontWeight" Value="DemiBold"/>
-            <Setter Property="Width" Value="115"/>
+            <Setter Property="Width" Value="250"/>
             <Setter Property="Height" Value="30"/>
         </Style>
     </Page.Resources>
@@ -70,16 +70,18 @@
 
         <StackPanel Grid.Row="2" Margin="15" Orientation="Horizontal">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="First Page" Style="{StaticResource TextBlockStyle}"/>
+                <TextBlock Text="Page Range" Style="{StaticResource TextBlockStyle}"/>
                 <TextBox x:Name="FirstPage" Style="{StaticResource TextBoxStyle}" behaviors:NumericOnlyBehavior.IsEnabled="True"/>    
             </StackPanel>
 
+            <!--
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Text="Last Page" Style="{StaticResource TextBlockStyle}"/>
                 <TextBox x:Name="LastPage" Style="{StaticResource TextBoxStyle}" behaviors:NumericOnlyBehavior.IsEnabled="True"/>
                 
             </StackPanel>
-
+            -->
+            
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Text="" Style="{StaticResource TextBlockStyle}"/>
                 <Button Content="Split" Margin="10,2,10,2" Width="150" Height="30" 

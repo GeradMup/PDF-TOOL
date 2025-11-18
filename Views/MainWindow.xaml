@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
-        Title="Actom PDF Tool v0.1 (Developer: Gerad Mupfumisi)"
+        Title="Custom PDF Tool v0.2 (Developer: Gerad Mupfumisi)"
         MinHeight="700" MinWidth="800"
         Height="700" Width="800"
         WindowState="Maximized"
@@ -45,6 +45,12 @@
                     Content="Splitter" 
                     Style="{StaticResource RoundedButtonStyle}"
                     Click="PdfSplitter_Click"/>
+
+            <Button x:Name="ToImage"
+                    Content="To Image"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Click="ToImage_Click"/>
+
 
         </StackPanel>
 
